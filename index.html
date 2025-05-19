@@ -121,7 +121,8 @@
     
     .sign-up-text {
       text-align: center;
-      margin-top: 16px;
+      margin-top: 1px;
+      margin-bottom: 16px;
     }
     
     .sign-up-text a {
@@ -238,7 +239,7 @@
       transform: rotate(180deg);
     }
     
-    /* Additional responsive adjustments */
+
     @media (max-width: 360px) {
       body {
         padding: 10px;
@@ -263,31 +264,13 @@
 <body>
   <div class="container">
     <div class="logo-container">
-      <svg width="100" height="80" viewBox="0 0 100 80">
-       
-        <path d="M10,50 C10,50 20,55 50,55 C80,55 90,50 90,50 L85,65 L15,65 L10,50 Z" fill="#0d47a1" />
-        
-       
-        <rect x="20" y="45" width="60" height="10" rx="2" fill="#1565c0" />
-        
-        
-        <rect x="45" y="35" width="10" height="15" rx="1" fill="#1565c0" />
-        <rect x="46" y="32" width="8" height="3" rx="1" fill="#ff8f00" />
-        
-        
-        <rect x="25" y="35" width="8" height="8" rx="1" fill="#ff8f00" />
-        <rect x="35" y="38" width="8" height="5" rx="1" fill="#ff8f00" />
-        <rect x="57" y="38" width="8" height="5" rx="1" fill="#ff8f00" />
-        <rect x="67" y="35" width="8" height="8" rx="1" fill="#ff8f00" />
-        
-        
-        <path d="M5,68 Q10,66 15,68 Q20,70 25,68 Q30,66 35,68 Q40,70 45,68 Q50,66 55,68 Q60,70 65,68 Q70,66 75,68 Q80,70 85,68 Q90,66 95,68" stroke="#bbdefb" stroke-width="2" fill="none" />
-        <path d="M5,72 Q10,70 15,72 Q20,74 25,72 Q30,70 35,72 Q40,74 45,72 Q50,70 55,72 Q60,74 65,72 Q70,70 75,72 Q80,74 85,72 Q90,70 95,72" stroke="#bbdefb" stroke-width="2" fill="none" />
-      </svg>
-      <h2>TITANIC</h2>
+      <img src="titanic.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 10px;">
+      <h2>TITANIC SHOP</h2>
     </div>
-
     <div id="authForm" class="form-section">
+       <div class="sign-up-text">
+       Please Sign In
+      </div>
       <h3>Sign In</h3>
       <div class="form-group">
         <label for="email">Email Address</label>
@@ -331,26 +314,30 @@
     </div>
 
     <div id="orderForm" class="form-section" style="display:none">
+       <p>Delivery Right Infront Of Your Door</p>
+       <p>Service Tax: 1000IQD Per Item</p>
+        <p>Delivery Inside Duhok City: 3000 IQD</p>
+       
       <h3>Place Order</h3>
       <div class="form-group">
-        <label for="itemLink">Item Link</label>
-        <input type="text" id="itemLink" placeholder="Paste product URL">
+        <label for="itemLink">Enter Item Link</label>
+        <input type="text" id="itemLink" placeholder="Put the link here">
       </div>
       <div class="form-group">
-        <label for="size">Size</label>
-        <input type="text" id="size" placeholder="Enter size (if applicable)">
+        <label for="size">Enter Item Size</label>
+        <input type="text" id="size" placeholder="Example: 39 Or XL ">
       </div>
       <div class="form-group">
         <label for="color">Color</label>
-        <input type="text" id="color" placeholder="Enter color preference">
+        <input type="text" id="color" placeholder="Example: Black, Red, Blue">
       </div>
       <div class="form-group">
         <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" placeholder="Enter quantity" min="1" value="1">
+        <input type="number" id="quantity" placeholder="How Many Items You Want" min="1" value="1">
       </div>
 
       <button id="sendOrderBtn">Send Order</button>
-      <a href="store.html"><button id="sendOrderBtn">View Store Items</button></a>
+      <a href="commingSoon.HTML"><button id="sendOrderBtn" style="background-color: #fb8c00;">Fast Orders Section</button></a>
       <button id="toggleInfoBtn" class="secondary">Edit My Info</button>
 
       <div id="editableInfo" style="display: none; margin-top: 16px;">
@@ -558,9 +545,15 @@
     function getItemLinkDisplay(link) {
       if (!link) return 'No link provided';
       
+      // Ensure the link includes the http protocol if not present
+      let fullLink = link;
+      if (!link.startsWith('http://') && !link.startsWith('https://')) {
+        fullLink = 'https://' + link;
+      }
+      
       // Truncate long URLs for display
       const displayLink = link.length > 40 ? link.substring(0, 37) + '...' : link;
-      return `<a href="${link}" target="_blank">${displayLink}</a>`;
+      return `<a href="${fullLink}" target="_blank">${displayLink}</a>`;
     }
 
     document.getElementById("saveInfoBtn").addEventListener("click", () => {
@@ -606,12 +599,18 @@
           return;
         }
         
+        // Ensure the link includes the http protocol if not present
+        let fullItemLink = itemLink;
+        if (!itemLink.startsWith('http://') && !itemLink.startsWith('https://')) {
+          fullItemLink = 'https://' + itemLink;
+        }
+        
         const infoRef = ref(db, "clientInfo/" + user.uid);
         get(infoRef).then(snapshot => {
           if (snapshot.exists()) {
             const userInfo = snapshot.val();
             const order = {
-              itemLink: itemLink,
+              itemLink: fullItemLink, // Store the full link with protocol
               size: document.getElementById("size").value,
               color: document.getElementById("color").value,
               quantity: document.getElementById("quantity").value || "1",
